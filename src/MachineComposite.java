@@ -20,13 +20,26 @@ public class MachineComposite extends MachineComponent implements Observer{
     private List<MachineComponent> brokenComponents = new ArrayList<>();
     
     public void addComponent(MachineComponent mc){
+
+        mc.addObserver(this);
         components.add(mc);
+        checkIfBroken(mc);
+    }
+
+    private void checkIfBroken(MachineComponent mc) {
+        if(mc.isBroken() && !broken ){
+            brokenComponents.add(mc);
+            setBroken();
+            setChanged();
+            notifyObservers();
+        }
     }
 
     @Override
     public void setBroken() {
         if(!isBroken()){
             broken = true;
+            setChanged();
             notifyObservers();
         }
     }
@@ -35,6 +48,7 @@ public class MachineComposite extends MachineComponent implements Observer{
     public void repair() {
         if(isBroken()){
             broken = true;
+            setChanged();
             notifyObservers();
         }
     }
@@ -42,22 +56,34 @@ public class MachineComposite extends MachineComponent implements Observer{
     @Override
     public boolean isBroken() {
        if(broken) return true;
-       
-       for(MachineComponent mc : components){
-           if(mc.isBroken()) return true;
-       }
+
+       if(brokenComponents.isEmpty()) return true;
        
        return false;
     }
     
     @Override
     public void update(Observable o, Object arg) {
-        boolean isBrokenComponent = (boolean) arg;
-        
-        if(isBrokenComponent){ 
-            brokenComponents.add((MachineComponent) o);
+
+        MachineComponent mc = (MachineComponent) o;
+        boolean isBrokenComponent = mc.isBroken();
+
+        if(isBrokenComponent){
+            if(brokenComponents.isEmpty() && !broken) {
+                brokenComponents.add(mc);
+                setBroken();
+                setChanged();
+                notifyObservers();
+            }
         } else {
-            brokenComponents.remove((MachineComponent) o);
+            if(!brokenComponents.isEmpty() && broken) {
+                brokenComponents.remove(mc);
+                repair();
+                if(!isBroken()){
+                    setChanged();
+                    notifyObservers();
+                }
+            }
         }
     }
     
