@@ -57,7 +57,7 @@ public class MachineComposite extends MachineComponent implements Observer{
     public boolean isBroken() {
        if(broken) return true;
 
-       if(brokenComponents.isEmpty()) return true;
+       if(!brokenComponents.isEmpty()) return true;
        
        return false;
     }
