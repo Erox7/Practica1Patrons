@@ -82,7 +82,7 @@ public class MachineComposite extends MachineComponent implements Observer{
             }
         } else {
             brokenComponents.remove(mc);
-            if(!brokenBeforeProcess) {
+            if(brokenBeforeProcess) {
                 setChanged();
                 notifyObservers();
             }
