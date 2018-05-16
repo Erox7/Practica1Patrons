@@ -27,29 +27,34 @@ public class MachineComposite extends MachineComponent implements Observer{
     }
 
     private void checkIfBroken(MachineComponent mc) {
-        if(mc.isBroken() && !broken ){
+        if(mc.isBroken()){
             brokenComponents.add(mc);
-            setBroken();
-            setChanged();
-            notifyObservers();
+            if(!broken){
+                setChanged();
+                notifyObservers();
+            }
         }
     }
 
     @Override
     public void setBroken() {
-        if(!isBroken()){
+        if(!isBroken() && !broken){
             broken = true;
             setChanged();
             notifyObservers();
+        }else{
+            broken = true;
         }
     }
 
     @Override
     public void repair() {
-        if(isBroken()){
-            broken = true;
+        if(isBroken() && broken){
+            broken = false;
             setChanged();
             notifyObservers();
+        }else{
+            broken = false;
         }
     }
     
@@ -67,22 +72,19 @@ public class MachineComposite extends MachineComponent implements Observer{
 
         MachineComponent mc = (MachineComponent) o;
         boolean isBrokenComponent = mc.isBroken();
+        boolean brokenBeforeProcess = isBroken();
 
         if(isBrokenComponent){
-            if(brokenComponents.isEmpty() && !broken) {
-                brokenComponents.add(mc);
-                setBroken();
+            brokenComponents.add(mc);
+            if(!brokenBeforeProcess) {
                 setChanged();
                 notifyObservers();
             }
         } else {
-            if(!brokenComponents.isEmpty() && broken) {
-                brokenComponents.remove(mc);
-                repair();
-                if(!isBroken()){
-                    setChanged();
-                    notifyObservers();
-                }
+            brokenComponents.remove(mc);
+            if(!brokenBeforeProcess) {
+                setChanged();
+                notifyObservers();
             }
         }
     }
