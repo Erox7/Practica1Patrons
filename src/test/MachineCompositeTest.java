@@ -57,7 +57,7 @@ public class MachineCompositeTest {
     }
 
     @Test
-    public void testMachineRepairsWithBrokenChilds(){
+    public void testCompositeCantRepairWithBrokenChilds(){
         c1.addComponent(m1);
         m2.setBroken();
         c1.addComponent(m2);
