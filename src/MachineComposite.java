@@ -30,8 +30,7 @@ public class MachineComposite extends MachineComponent implements Observer{
         if(mc.isBroken()){
             brokenComponents.add(mc);
             if(!broken){
-                setChanged();
-                notifyObservers();
+                setChangesAndNotify();
             }
         }
     }
@@ -40,8 +39,7 @@ public class MachineComposite extends MachineComponent implements Observer{
     public void setBroken() {
         if(!isBroken() && !broken){
             broken = true;
-            setChanged();
-            notifyObservers();
+            setChangesAndNotify();
         }else{
             broken = true;
         }
@@ -51,8 +49,7 @@ public class MachineComposite extends MachineComponent implements Observer{
     public void repair() {
         if(isBroken() && broken){
             broken = false;
-            setChanged();
-            notifyObservers();
+            setChangesAndNotify();
         }else{
             broken = false;
         }
@@ -60,11 +57,7 @@ public class MachineComposite extends MachineComponent implements Observer{
     
     @Override
     public boolean isBroken() {
-       if(broken) return true;
-
-       if(!brokenComponents.isEmpty()) return true;
-       
-       return false;
+       return broken || !brokenComponents.isEmpty();
     }
     
     @Override
@@ -77,16 +70,19 @@ public class MachineComposite extends MachineComponent implements Observer{
         if(isBrokenComponent){
             brokenComponents.add(mc);
             if(!brokenBeforeProcess) {
-                setChanged();
-                notifyObservers();
+                setChangesAndNotify();
             }
         } else {
             brokenComponents.remove(mc);
             if(brokenBeforeProcess) {
-                setChanged();
-                notifyObservers();
+                setChangesAndNotify();
             }
         }
     }
-    
+
+    private void setChangesAndNotify() {
+        setChanged();
+        notifyObservers();
+    }
+
 }
